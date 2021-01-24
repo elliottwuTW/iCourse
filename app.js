@@ -27,6 +27,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Parse data
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 // Route
@@ -41,6 +42,7 @@ const server = app.listen(PORT, () => {
 
 // Unhandled promise rejection
 process.on('unhandledRejection', (err, promise) => {
+  console.error(err)
   console.error(`Unhandled Rejection caught: ${err.message}`)
   server.close(() => process.exit(1))
 })

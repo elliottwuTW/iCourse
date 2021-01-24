@@ -1,5 +1,7 @@
-module.exports = async (req, res, next) => {
-  const axios = require('axios')
+const asyncUtil = require('./asyncUtil')
+
+module.exports = asyncUtil(async (req, res, next) => {
+  const fetchData = require('../utils/fetchData')
   const token = req.cookies.token
 
   // no token
@@ -8,22 +10,15 @@ module.exports = async (req, res, next) => {
     return next()
   }
 
-  try {
-    // api url
-    const DOMAIN = process.env.DOMAIN || 'http://localhost:3000'
-    const BASE_URL = DOMAIN + '/api/v1'
-    const response = await axios.get(BASE_URL + '/auth/me', {
-      headers: { authorization: `Bearer ${token}` }
-    })
+  const response = await fetchData('get', '/auth/me', {
+    headers: { authorization: `Bearer ${token}` }
+  })
 
-    // put current user into req.user
-    if (response.data.status === 'success') {
-      req.user = response.data.data
-    } else {
-      req.user = {}
-    }
-    next()
-  } catch (err) {
-    next(err)
+  // put current user into req.user
+  if (response.status === 'success') {
+    req.user = response.data
+  } else {
+    req.user = {}
   }
-}
+  next()
+})

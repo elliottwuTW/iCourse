@@ -1,22 +1,18 @@
 const express = require('express')
 const router = express.Router()
 
-// api url
-const DOMAIN = process.env.DOMAIN || 'http://localhost:3000'
-const BASE_URL = DOMAIN + '/api/v1'
+const asyncUtil = require('../../middleware/asyncUtil')
 
 const fetchData = require('../../utils/fetchData')
-const viewResponse = require('../../utils/viewResponse')
 
 // routes
-router.get('/', async (req, res, next) => {
-  const url = BASE_URL + '/groups'
-  const result = await fetchData('get', url)
+router.get('/', asyncUtil(async (req, res, next) => {
+  const result = await fetchData('get', '/groups')
 
-  viewResponse(result, res, 'groups', {
+  return res.render('groups', {
     groups: result.data,
     pagination: result.pagination
   })
-})
+}))
 
 module.exports = router
