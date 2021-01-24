@@ -4,7 +4,11 @@ const axios = require('axios')
 const DOMAIN = process.env.DOMAIN || 'http://localhost:3000'
 const BASE_URL = DOMAIN + '/api/v1'
 
-const fetchData = async (method, path, config = {}) => {
+const fetchData = async (method, path, config = {}, token = '') => {
+  config = {
+    ...config,
+    headers: { authorization: `Bearer ${token}` }
+  }
   let res
   switch (method) {
     case 'get':

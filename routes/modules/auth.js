@@ -23,4 +23,9 @@ router.post('/login', asyncUtil(async (req, res, next) => {
   }
 }))
 
+router.get('/logout', (req, res, next) => {
+  res.cookie('token', '')
+  return res.redirect('/')
+})
+
 module.exports = router

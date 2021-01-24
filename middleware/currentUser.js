@@ -10,9 +10,7 @@ module.exports = asyncUtil(async (req, res, next) => {
     return next()
   }
 
-  const response = await fetchData('get', '/auth/me', {
-    headers: { authorization: `Bearer ${token}` }
-  })
+  const response = await fetchData('get', '/auth/me', {}, token)
 
   // put current user into req.user
   if (response.status === 'success') {
