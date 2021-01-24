@@ -13,11 +13,23 @@ async function fetchCurrentUser () {
   // api url
   const DOMAIN = 'http://localhost:3000'
   const BASE_URL = DOMAIN + '/api/v1'
-  const token = localStorage.getItem('token') || null
+
+  const token = getCookie().token || null
 
   return await axios.get(BASE_URL + '/auth/me', {
     headers: { authorization: `Bearer ${token}` }
   })
+}
+
+// get cookie
+function getCookie () {
+  const cookieItems = document.cookie.split(';')
+  const cookie = {}
+  cookieItems.forEach(item => {
+    const pair = item.split('=')
+    cookie[pair[0]] = pair[1]
+  })
+  return cookie
 }
 
 // render navbar HTML

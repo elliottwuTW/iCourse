@@ -1,5 +1,6 @@
 const express = require('express')
 const dotenv = require('dotenv')
+const cookieParser = require('cookie-parser')
 const morgan = require('morgan')
 
 const routes = require('./routes/index')
@@ -16,6 +17,9 @@ const helpers = require('./utils/exphbsHelper')
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }, helpers))
 app.set('view engine', 'hbs')
 app.use(express.static('public'))
+app.use(cookieParser(process.env.COOKIE_SECRET, {
+  httpOnly: true
+}))
 
 // Develop logging
 if (process.env.NODE_ENV === 'development') {
