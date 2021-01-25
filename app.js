@@ -2,6 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const cookieParser = require('cookie-parser')
 const morgan = require('morgan')
+const methodOverride = require('method-override')
 
 const routes = require('./routes/index')
 const errorHandler = require('./middleware/error')
@@ -20,6 +21,8 @@ app.use(express.static('public'))
 app.use(cookieParser(process.env.COOKIE_SECRET, {
   httpOnly: true
 }))
+
+app.use(methodOverride('_method'))
 
 // Develop logging
 if (process.env.NODE_ENV === 'development') {

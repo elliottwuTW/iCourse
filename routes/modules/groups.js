@@ -7,7 +7,7 @@ const fetchData = require('../../utils/fetchData')
 
 // routes
 router.get('/', asyncUtil(async (req, res, next) => {
-  const groupsResult = await fetchData('get', '/groups')
+  const groupsResult = await fetchData('get', '/groups', req)
 
   // get user's following groups to customize page
   let loggedIn
@@ -17,9 +17,9 @@ router.get('/', asyncUtil(async (req, res, next) => {
     loggedIn = false
   } else {
     loggedIn = true
-    const followGroupsResult = await fetchData('get', `/users/${req.user.id}/follows`, {}, req.cookies.token)
+    const followGroupsResult = await fetchData('get', `/users/${req.user.id}/follows`, req)
 
-    const followGroupIds = followGroupsResult.data.map(group => group.id)
+    const followGroupIds = followGroupsResult.data.groups.map(group => group.id)
     groups = groups.map(group => ({
       ...group,
       isFollowed: (followGroupIds.includes(group.id))

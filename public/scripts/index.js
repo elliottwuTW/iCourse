@@ -44,7 +44,7 @@ function renderNavbar (response) {
 
     navbarContainer.innerHTML += `
       <span style="color: white;margin-right: 10px;">Hi, ${user.name}</span>
-      <a href="/users/${user.id}" style="color: white;margin-right: 10px;">Profile</a>
+      <a href="/users/profile" style="color: white;margin-right: 10px;">Profile</a>
       <a href="/auth/logout"><button class="btn btn-outline-success my-2 my-sm-0">Logout</button></a>
     `
   } else {
