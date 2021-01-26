@@ -1,11 +1,38 @@
 <div class="card mb-3">
   <div class="card-body">
-    <h5 class="card-title">{{user.name}}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">{{user.email}}</h6>
-    <ul class="list-unstyled">
-      <li><strong>{{follow.groups.length}}</strong> 追蹤群組數</li>
-    </ul>
-    <a href="/users/profile/edit" class="btn btn-primary mt-3">Edit</a>
+    <div class="row">
+      <div class="col-md-3">
+        <h5 class="card-title">{{user.name}} [{{user.role}}]</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{user.email}}</h6>
+        <ul class="list-unstyled">
+          <li><strong>{{follow.groups.length}}</strong> 追蹤群組數</li>
+        </ul>
+        {{#if isSelf}}
+        <a href="/users/profile/edit" class="btn btn-primary mt-3">編輯個人檔案</a>
+        {{/if}}
+      </div>
+      <div class="col-md-9">
+        {{#if isSelf}}
+
+        {{#if (equal user.role 'publisher')}}
+        <p>我的群組 <strong>({{user.Groups.length}})</strong></p>
+        {{#if (equal user.Groups.length 0)}}
+        <a href="/groups/new" class="btn btn-primary mt-3">建立群組</a>
+        {{else}}
+        {{#each user.Groups}}
+        {{#if @first}}
+        <a href="/groups/{{this.id}}">
+          <img src="{{this.photo}}" width="60px" height="60px" class="avatar">
+        </a>
+        {{/if}}
+        {{/each}}
+        {{/if}}
+
+        {{/if}}
+
+        {{/if}}
+      </div>
+    </div>
   </div>
 </div>
 <div class="row">

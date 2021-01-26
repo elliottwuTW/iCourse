@@ -15,7 +15,7 @@ const PORT = process.env.PORT
 // express-handlebars
 const exphbs = require('express-handlebars')
 const helpers = require('./utils/exphbsHelper')
-app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }, helpers))
+app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs', helpers }))
 app.set('view engine', 'hbs')
 app.use(express.static('public'))
 app.use(cookieParser(process.env.COOKIE_SECRET, {

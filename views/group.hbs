@@ -33,7 +33,10 @@
     {{/if}}
     {{/if}}
     {{#if isSelf}}
-    <a href="/groups/{{group.id}}/edit" class="btn btn-primary">Edit</a>
+    <a href="/groups/{{group.id}}/edit" class="btn btn-success">編輯群組</a>
+    <form action="/groups/{{group.id}}?_method=DELETE" method="POST" style="display: inline;">
+      <button type="submit" class="btn btn-danger" onclick="return deleteCheck()">刪除群組</button>
+    </form>
     {{/if}}
   </div>
   <hr>

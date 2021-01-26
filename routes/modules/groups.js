@@ -3,8 +3,6 @@ const router = express.Router()
 
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
-const FormData = require('form-data')
-const fs = require('fs')
 
 const asyncUtil = require('../../middleware/asyncUtil')
 
@@ -33,6 +31,11 @@ router.get('/', asyncUtil(async (req, res, next) => {
     groups,
     pagination: groupsResult.pagination
   })
+}))
+
+// create group page
+router.get('/new', asyncUtil(async (req, res, next) => {
+  return res.render('groupEdit')
 }))
 
 // get single group
@@ -72,18 +75,24 @@ router.get('/:id/edit', asyncUtil(async (req, res, next) => {
   })
 }))
 
+// create group
+router.post('/', upload.single('photo'), asyncUtil(async (req, res, next) => {
+  const formData = generateFormData(req)
+
+  // send POST request to API sever with formData
+  const createdGroup = await fetchData(req, {
+    method: 'post',
+    path: '/groups',
+    data: formData,
+    config: formData.getHeaders()
+  })
+
+  return res.redirect(`/groups/${createdGroup.data.id}`)
+}))
+
 // update group info
 router.put('/:id', upload.single('photo'), asyncUtil(async (req, res, next) => {
-  // parse and generate another form
-  const formData = new FormData()
-  // fields
-  Object.entries(req.body).forEach(entry => {
-    formData.append(entry[0], entry[1])
-  })
-  // file
-  if (req.file) {
-    formData.append('photo', fs.createReadStream(`./${req.file.path}`))
-  }
+  const formData = generateFormData(req)
 
   // send PUT request to API sever with formData
   await fetchData(req, {
@@ -96,6 +105,16 @@ router.put('/:id', upload.single('photo'), asyncUtil(async (req, res, next) => {
   return res.redirect(`/groups/${req.params.id}`)
 }))
 
+// delete group
+router.delete('/:id', asyncUtil(async (req, res, next) => {
+  await fetchData(req, {
+    method: 'delete',
+    path: `/groups/${req.params.id}`
+  })
+
+  return res.redirect('/')
+}))
+
 // get current user's following groups ids
 async function getUserFollowGroupIds (req) {
   const followGroupsResult = await fetchData(req, {
@@ -103,6 +122,25 @@ async function getUserFollowGroupIds (req) {
     path: `/users/${req.user.id}/follows`
   })
   return followGroupsResult.data.groups.map(group => group.id)
+}
+
+// parse and generate form data
+function generateFormData (req) {
+  const FormData = require('form-data')
+  const fs = require('fs')
+
+  // parse and generate another form
+  const formData = new FormData()
+  // fields
+  Object.entries(req.body).forEach(entry => {
+    formData.append(entry[0], entry[1])
+  })
+  // photo
+  if (req.file) {
+    formData.append('photo', fs.createReadStream(`./${req.file.path}`))
+  }
+
+  return formData
 }
 
 module.exports = router

@@ -43,8 +43,8 @@ function renderNavbar (response) {
       : '<a href="/admin" style="color: white;margin-right: 10px;">Admin 後台</a>'
 
     navbarContainer.innerHTML += `
-      <span style="color: white;margin-right: 10px;">Hi, ${user.name}</span>
-      <a href="/users/profile" style="color: white;margin-right: 10px;">Profile</a>
+      <span style="color: white;margin-right: 10px;">Hi, ${user.name} </span>
+      <a href="/users/${user.id}/profile" style="color: white;margin-right: 10px;">Profile</a>
       <a href="/auth/logout"><button class="btn btn-outline-success my-2 my-sm-0">Logout</button></a>
     `
   } else {
@@ -53,4 +53,8 @@ function renderNavbar (response) {
       <a href="/auth/login"><button class="btn btn-outline-success my-2 my-sm-0">Login</button></a>
     `
   }
+}
+
+function deleteCheck () {
+  return window.confirm('確認要刪除?')
 }

@@ -6,31 +6,36 @@ const asyncUtil = require('../../middleware/asyncUtil')
 const fetchData = require('../../utils/fetchData')
 
 // profile page
-router.get('/profile', asyncUtil(async (req, res, next) => {
-  const userResult = await fetchData(req, {
-    method: 'get',
-    path: '/auth/me'
-  })
+router.get('/:id/profile', asyncUtil(async (req, res, next) => {
+  let user
+  // following groups
   const followResult = await fetchData(req, {
     method: 'get',
-    path: `/users/${req.user.id}/follows`
+    path: `/users/${req.params.id}/follows`
   })
+  // user info
+  const isSelf = String(req.user.id) === String(req.params.id)
+  if (!isSelf) {
+    user = req.user
+  } else {
+    const userResult = await fetchData(req, {
+      method: 'get',
+      path: `/users/${req.user.id}`
+    })
+    user = userResult.data
+  }
 
   return res.render('profile', {
-    user: userResult.data,
+    user,
+    isSelf,
     follow: followResult.data
   })
 }))
 
 // profile edit page
 router.get('/profile/edit', asyncUtil(async (req, res, next) => {
-  const userResult = await fetchData(req, {
-    method: 'get',
-    path: '/auth/me'
-  })
-
   return res.render('profileEdit', {
-    user: userResult.data
+    user: req.user
   })
 }))
 
@@ -48,7 +53,7 @@ router.put('/profile', asyncUtil(async (req, res, next) => {
     data: req.body
   })
 
-  return res.redirect('/users/profile')
+  return res.redirect(`/users/${req.user.id}/profile`)
 }))
 
 module.exports = router
