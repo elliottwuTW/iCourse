@@ -1,0 +1,64 @@
+<div class="row">
+  <div class="col-md-12">
+    <h1>{{group.name}}</h1>
+  </div>
+  <div class="col-md-4">
+    <img class="img-responsive center-block" src="{{group.photo}}" alt="Card image cap"
+      style="width: 250px;margin-bottom: 25px;">
+  </div>
+  <div class="col-md-8">
+    <div class="well">
+      <ul class="list-unstyled">
+        <li><strong>Website:</strong> {{group.website}}</li>
+        <li><strong>Phone:</strong> {{group.phone}}</li>
+        <li><strong>Email:</strong> {{group.email}}</li>
+        <li><strong>Average Rating:</strong> {{group.averageRating}} / 10</li>
+        <li><strong>Average Cost:</strong> NT {{group.averageCost}}</li>
+        <li><strong>Address:</strong> {{group.address}}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <p>{{group.description}}</p>
+    <br>
+    {{#if loggedIn}}
+    {{#if group.isFollowed}}
+    <form action="/follows/{{group.id}}?_method=DELETE" method="POST" class="d-inline">
+      <button class="btn btn-danger" type="submit">Unfollow</button>
+    </form>
+    {{else}}
+    <form action="/follows/{{group.id}}" method="POST" class="d-inline">
+      <button class="btn btn-primary" type="submit">Follow</button>
+    </form>
+    {{/if}}
+    {{/if}}
+    {{#if isSelf}}
+    <a href="/groups/{{group.id}}/edit" class="btn btn-primary">Edit</a>
+    {{/if}}
+  </div>
+  <hr>
+</div>
+<br />
+<br />
+
+<h3>所有課程：</h3>
+<div class="row">
+  {{#each group.Courses}}
+  <div class="col-md-4">
+    <div class="card mb-4 shadow-sm">
+      <img class="card-img-top" src="{{this.photo}}" alt="Card image cap" width="286px" height="180px">
+      <div class="card-body">
+        <p class="card-text">
+          <a href="/courses/{{this.id}}">
+            {{this.name}}
+          </a>
+        </p>
+        <p class="card-text">{{this.description}}</p>
+        <p class="card-text">{{this.hours}}</p>
+        <p class="card-text">{{this.tuition}}</p>
+      </div>
+    </div>
+  </div>
+  {{/each}}
+</div>
+<a href="javascript:history.back()">回上一頁</a>

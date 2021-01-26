@@ -10,7 +10,10 @@ module.exports = asyncUtil(async (req, res, next) => {
     return next()
   }
 
-  const response = await fetchData('get', '/auth/me', req)
+  const response = await fetchData(req, {
+    method: 'get',
+    path: '/auth/me'
+  })
 
   // put current user into req.user
   if (response.status === 'success') {

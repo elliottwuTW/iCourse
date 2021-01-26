@@ -12,8 +12,10 @@ router.get('/login', (req, res, next) => {
 
 // login
 router.post('/login', asyncUtil(async (req, res, next) => {
-  const loginResult = await fetchData('post', '/auth/login', req, {
-    ...req.body
+  const loginResult = await fetchData(req, {
+    method: 'post',
+    path: '/auth/login',
+    data: { ...req.body }
   })
 
   if (loginResult.status === 'success') {
@@ -37,8 +39,10 @@ router.get('/register', (req, res, next) => {
 
 // register page
 router.post('/register', asyncUtil(async (req, res, next) => {
-  const registerResult = await fetchData('post', '/auth/register', req, {
-    ...req.body
+  const registerResult = await fetchData(req, {
+    method: 'post',
+    path: '/auth/register',
+    data: { ...req.body }
   })
 
   if (registerResult.status === 'success') {
