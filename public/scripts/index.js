@@ -1,24 +1,76 @@
 // display navbar
 document.addEventListener('DOMContentLoaded', async function () {
   try {
-    const res = await fetchCurrentUser()
-    renderNavbar(res.data)
+    const currentUser = await ajax({ method: 'get', path: '/auth/me' })
+    renderNavbar(currentUser)
   } catch (err) {
     console.error(err)
     renderNavbar({ status: 'error' })
   }
 })
 
-async function fetchCurrentUser () {
+// follow & unfollow
+const groupsWrapper = document.querySelector('#groups-wrapper')
+const groupWrapper = document.querySelector('#group-wrapper')
+if (groupsWrapper) {
+  groupsWrapper.addEventListener('click', followHandler)
+}
+if (groupWrapper) {
+  groupWrapper.addEventListener('click', followHandler)
+}
+
+// follow/unfollow handler
+async function followHandler (event) {
+  try {
+    const target = event.target
+    const clickFollow = target.matches('.btn-follow')
+    const clickUnfollow = target.matches('.btn-unfollow')
+    // follow/unfollow a group
+    if (clickFollow || clickUnfollow) {
+      const groupId = target.dataset.group
+      if (clickFollow) {
+        await ajax({ method: 'post', path: `/follows/${groupId}` })
+      } else {
+        await ajax({ method: 'delete', path: `/follows/${groupId}` })
+      }
+
+      // change to follow/unfollow button
+      target.innerHTML = clickFollow ? 'Unfollow' : 'Follow'
+      target.className = clickFollow ? 'btn btn-warning btn-unfollow' : 'btn btn-primary btn-follow'
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+// axios request
+async function ajax (option) {
   // api url
   const DOMAIN = 'http://localhost:3000'
   const BASE_URL = DOMAIN + '/api/v1'
-
   const token = getCookie().token || null
 
-  return await axios.get(BASE_URL + '/auth/me', {
-    headers: { authorization: `Bearer ${token}` }
-  })
+  let res
+  const url = BASE_URL + option.path
+  const data = option.data ? option.data : {}
+  const config = { headers: { authorization: `Bearer ${token}` } }
+  switch (option.method) {
+    case 'get':
+      res = await axios.get(url, config)
+      break
+    case 'post':
+      res = await axios.post(url, data, config)
+      break
+    case 'put':
+      res = await axios.put(url, data, config)
+      break
+    case 'delete':
+      res = await axios.delete(url, { ...data, ...config })
+      break
+    default:
+      break
+  }
+  return res.data
 }
 
 // get cookie

@@ -22,7 +22,8 @@ router.get('/', asyncUtil(async (req, res, next) => {
     const followGroupIds = await getUserFollowGroupIds(req)
     groups = groups.map(group => ({
       ...group,
-      isFollowed: (followGroupIds.includes(group.id))
+      isFollowed: (followGroupIds.includes(group.id)),
+      isMine: (req.user.id === group.UserId)
     }))
   }
 
@@ -52,7 +53,8 @@ router.get('/:id', asyncUtil(async (req, res, next) => {
     const followGroupIds = await getUserFollowGroupIds(req)
     group = {
       ...group,
-      isFollowed: (followGroupIds.includes(group.id))
+      isFollowed: (followGroupIds.includes(group.id)),
+      isMine: (req.user.id === group.UserId)
     }
   }
 

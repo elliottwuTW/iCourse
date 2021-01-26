@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" id="group-wrapper">
   <div class="col-md-12">
     <h1>{{group.name}}</h1>
   </div>
@@ -21,15 +21,11 @@
   <div class="col-md-12">
     <p>{{group.description}}</p>
     <br>
-    {{#if loggedIn}}
+    {{#if (and loggedIn (not group.isMine) )}}
     {{#if group.isFollowed}}
-    <form action="/follows/{{group.id}}?_method=DELETE" method="POST" class="d-inline">
-      <button class="btn btn-danger" type="submit">Unfollow</button>
-    </form>
+    <button class="btn btn-warning btn-unfollow" data-group="{{group.id}}">Unfollow</button>
     {{else}}
-    <form action="/follows/{{group.id}}" method="POST" class="d-inline">
-      <button class="btn btn-primary" type="submit">Follow</button>
-    </form>
+    <button class="btn btn-primary btn-follow" data-group="{{group.id}}">Follow</button>
     {{/if}}
     {{/if}}
     {{#if isSelf}}

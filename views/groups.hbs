@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" id="groups-wrapper">
   {{#each groups}}
   <div class="col-md-4">
     <div class="card mb-4 shadow-sm">
@@ -13,13 +13,11 @@
         {{!-- Follow --}}
         {{#if ../loggedIn}}
         {{#if this.isFollowed}}
-        <form action="/follows/{{this.id}}?_method=DELETE" method="POST" class="d-inline">
-          <button class="btn btn-warning" type="submit">Unfollow</button>
-        </form>
+        <button class="btn btn-warning btn-unfollow" data-group="{{this.id}}" {{#if
+          this.isMine}}disabled{{/if}}>Unfollow</button>
         {{else}}
-        <form action="/follows/{{this.id}}" method="POST" class="d-inline">
-          <button class="btn btn-primary" type="submit">Follow</button>
-        </form>
+        <button class="btn btn-primary btn-follow" data-group="{{this.id}}" {{#if
+          this.isMine}}disabled{{/if}}>Follow</button>
         {{/if}}
         {{/if}}
       </div>

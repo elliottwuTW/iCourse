@@ -9,5 +9,7 @@ module.exports = {
     if (typeof a !== 'undefined' && typeof b !== 'undefined') {
       return a.toString() !== b.toString()
     }
-  }
+  },
+  and: (bool1, bool2) => (bool1 && bool2),
+  not: (bool) => !bool
 }
