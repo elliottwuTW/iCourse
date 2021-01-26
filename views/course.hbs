@@ -1,0 +1,64 @@
+<div class="row">
+  <div class="col-md-12">
+    <h1>{{course.name}}</h1>
+  </div>
+  <div class="col-md-4">
+    <img class="img-responsive center-block" src="{{course.photo}}" alt="Card image cap"
+      style="width: 250px;margin-bottom: 25px;">
+  </div>
+  <div class="col-md-8">
+    <div class="well">
+      <ul class="list-unstyled">
+        <li><strong>Hours:</strong> {{course.hours}}</li>
+        <li><strong>Tuition:</strong> NT {{course.tuition}}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <p>{{course.description}}</p>
+    <br>
+    {{#if isMine}}
+    <a href="/courses/{{course.id}}/edit" class="btn btn-success">編輯課程</a>
+    <form action="/courses/{{course.id}}?_method=DELETE" method="POST" style="display: inline;">
+      <input type="hidden" name="groupId" value="{{course.Group.id}}">
+      <button type="submit" class="btn btn-danger" onclick="return deleteCheck()">刪除課程</button>
+    </form>
+    {{/if}}
+  </div>
+  <hr>
+</div>
+<br />
+<br />
+
+<h3>所有評論：</h3>
+{{#each course.Reviews}}
+{{#if ../user.isAdmin}}
+<form action="/reviews/{{this.id}}?_method=DELETE" method="POST" style="float: right;">
+  <button type="submit" class="btn btn-danger">Delete</button>
+</form>
+{{/if}}
+<blockquote class="blockquote mb-0">
+  <h4><a href="/users/{{this.User.id}}">{{this.User.name}}</a></h4>
+  <h6>{{this.title}}</h6>
+  <p>{{this.text}}</p>
+  {{!-- <footer class="blockquote-footer">{{toFromNowFormat this.createdAt}}</footer> --}}
+</blockquote>
+<hr />
+{{/each}}
+
+<br>
+<br>
+
+<h4>留下評論：</h4>
+<form action="/courses/{{course.id}}/reviews" method="POST">
+  <div class="form-group">
+    <label for="title">標頭: </label>
+    <input type="text" class="form-control" name="title" id="title" placeholder="Enter title...">
+  </div>
+  <div class="form-group">
+    <label for="text">內容: </label>
+    <textarea class="form-control" name="text" id="text" rows="3"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<a href="javascript:history.back()">回上一頁</a>

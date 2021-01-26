@@ -1,0 +1,35 @@
+{{#if (isUndefined course)}}
+<h2>建立新課程</h2>
+<form action="/groups/{{groupId}}/courses" method="POST" enctype="multipart/form-data">
+  {{else}}
+  <h2>修改課程資料</h2>
+  <form action="/courses/{{course.id}}?_method=PUT" method="POST" enctype="multipart/form-data">
+    {{/if}}
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" name="name" id="name" placeholder="Enter name..." value="{{course.name}}">
+    </div>
+    <div class="form-group">
+      <label for="hours">Hours</label>
+      <input type="number" class="form-control" name="hours" id="hours" placeholder="Enter hours..."
+        value="{{course.hours}}" step="1" min="1">
+    </div>
+    <div class="form-group">
+      <label for="tuition">Tuition</label>
+      <input type="number" class="form-control" name="tuition" id="tuition" placeholder="Enter tuition..."
+        value="{{course.tuition}}" min="0">
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea class="form-control" name="description" id="description" rows="5">{{course.description}}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="photo">Photo</label>
+      <input type="file" class="form-control-file" id="photo" name="photo">
+    </div>
+    {{#if (isUndefined course)}}
+    <button type="submit" class="btn btn-primary">Submit</button>
+    {{else}}
+    <button type="submit" class="btn btn-primary">Save</button>
+    {{/if}}
+  </form>

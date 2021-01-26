@@ -21,18 +21,20 @@
   <div class="col-md-12">
     <p>{{group.description}}</p>
     <br>
-    {{#if (and loggedIn (not group.isMine) )}}
+    {{#if (and loggedIn (not isMine) )}}
     {{#if group.isFollowed}}
     <button class="btn btn-warning btn-unfollow" data-group="{{group.id}}">Unfollow</button>
     {{else}}
     <button class="btn btn-primary btn-follow" data-group="{{group.id}}">Follow</button>
     {{/if}}
     {{/if}}
-    {{#if isSelf}}
+    {{#if isMine}}
     <a href="/groups/{{group.id}}/edit" class="btn btn-success">編輯群組</a>
     <form action="/groups/{{group.id}}?_method=DELETE" method="POST" style="display: inline;">
       <button type="submit" class="btn btn-danger" onclick="return deleteCheck()">刪除群組</button>
     </form>
+    <div class="w-100 mb-2"></div>
+    <a href="/groups/{{group.id}}/courses/new" class="btn btn-outline-primary mt-3">建立新課程</a>
     {{/if}}
   </div>
   <hr>

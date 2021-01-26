@@ -7,6 +7,7 @@ const upload = multer({ dest: 'temp/' })
 const asyncUtil = require('../../middleware/asyncUtil')
 
 const fetchData = require('../../utils/fetchData')
+const generateFormData = require('../../utils/generateFormData')
 
 // get all groups
 router.get('/', asyncUtil(async (req, res, next) => {
@@ -53,14 +54,13 @@ router.get('/:id', asyncUtil(async (req, res, next) => {
     const followGroupIds = await getUserFollowGroupIds(req)
     group = {
       ...group,
-      isFollowed: (followGroupIds.includes(group.id)),
-      isMine: (req.user.id === group.UserId)
+      isFollowed: (followGroupIds.includes(group.id))
     }
   }
 
   return res.render('group', {
     loggedIn: (req.user.id !== undefined),
-    isSelf: (req.user.id === group.User.id),
+    isMine: (req.user.id === group.User.id),
     group
   })
 }))
@@ -77,6 +77,13 @@ router.get('/:id/edit', asyncUtil(async (req, res, next) => {
   })
 }))
 
+// create group course page
+router.get('/:id/courses/new', asyncUtil(async (req, res, next) => {
+  return res.render('courseEdit', {
+    groupId: req.params.id
+  })
+}))
+
 // create group
 router.post('/', upload.single('photo'), asyncUtil(async (req, res, next) => {
   const formData = generateFormData(req)
@@ -90,6 +97,20 @@ router.post('/', upload.single('photo'), asyncUtil(async (req, res, next) => {
   })
 
   return res.redirect(`/groups/${createdGroup.data.id}`)
+}))
+
+// create group course
+router.post('/:id/courses', upload.single('photo'), asyncUtil(async (req, res, next) => {
+  const formData = generateFormData(req)
+
+  await fetchData(req, {
+    method: 'post',
+    path: `/groups/${req.params.id}/courses`,
+    data: formData,
+    config: formData.getHeaders()
+  })
+
+  return res.redirect(`/groups/${req.params.id}`)
 }))
 
 // update group info
@@ -124,25 +145,6 @@ async function getUserFollowGroupIds (req) {
     path: `/users/${req.user.id}/follows`
   })
   return followGroupsResult.data.groups.map(group => group.id)
-}
-
-// parse and generate form data
-function generateFormData (req) {
-  const FormData = require('form-data')
-  const fs = require('fs')
-
-  // parse and generate another form
-  const formData = new FormData()
-  // fields
-  Object.entries(req.body).forEach(entry => {
-    formData.append(entry[0], entry[1])
-  })
-  // photo
-  if (req.file) {
-    formData.append('photo', fs.createReadStream(`./${req.file.path}`))
-  }
-
-  return formData
 }
 
 module.exports = router
