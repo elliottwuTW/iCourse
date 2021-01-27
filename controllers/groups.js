@@ -2,13 +2,18 @@ const asyncUtil = require('../middleware/asyncUtil')
 
 const fetchData = require('../utils/fetchData')
 const generateFormData = require('../utils/generateFormData')
+const generateQueryParam = require('../utils/generateQueryParam')
+const generatePagination = require('../utils/generatePagination')
+
+const groupOption = require('../data/group.json')
 
 // @desc    get all groups (main page)
 // @route   GET /groups
 exports.groupsPage = asyncUtil(async (req, res, next) => {
+  const { selectedOption, queryParam } = generateQueryParam(req)
   const groupsResult = await fetchData(req, {
     method: 'get',
-    path: '/groups'
+    path: `/groups?${queryParam}`
   })
 
   let groups = groupsResult.data
@@ -26,7 +31,9 @@ exports.groupsPage = asyncUtil(async (req, res, next) => {
   return res.render('groups', {
     loggedIn: (req.user.id !== undefined),
     groups,
-    pagination: groupsResult.pagination
+    pagination: generatePagination(groupsResult.pagination),
+    option: groupOption,
+    selectedOption
   })
 })
 
