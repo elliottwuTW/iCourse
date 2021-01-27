@@ -37,6 +37,41 @@ exports.groupsPage = asyncUtil(async (req, res, next) => {
   })
 })
 
+// @desc    get all groups within location in radius
+// @route   GET /groups/radius/:lat/:lng/:radius
+exports.groupsRadiusPage = asyncUtil(async (req, res, next) => {
+  const { selectedOption, queryParam } = generateQueryParam(req)
+  const groupsResult = await fetchData(req, {
+    method: 'get',
+    path: `/groups/radius/${req.params.lat}/${req.params.lng}/${req.params.radius}?${queryParam}`
+  })
+
+  let groups = groupsResult.data
+
+  // add isFollowed if user is logged in
+  if (req.user.id) {
+    const followGroupIds = await getUserFollowGroupIds(req)
+    groups = groups.map(group => ({
+      ...group,
+      isFollowed: (followGroupIds.includes(group.id)),
+      isMine: (req.user.id === group.UserId)
+    }))
+  }
+
+  return res.render('groups', {
+    loggedIn: (req.user.id !== undefined),
+    groups,
+    pagination: generatePagination(groupsResult.pagination),
+    option: groupOption,
+    selectedOption,
+    geoInfo: {
+      lat: req.params.lat,
+      lng: req.params.lng,
+      radius: req.params.radius
+    }
+  })
+})
+
 // @desc    new group page
 // @route   GET /groups/new
 exports.newGroupPage = asyncUtil(async (req, res, next) => {

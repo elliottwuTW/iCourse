@@ -19,6 +19,29 @@ if (groupWrapper) {
   groupWrapper.addEventListener('click', followHandler)
 }
 
+// geoSearch
+const geoContainer = document.querySelector('#geo-container')
+const geoCheck = document.querySelector('#geo-check')
+const geoRadius = document.querySelector('#geo-radius')
+if (geoCheck) {
+  geoCheck.addEventListener('click', e => getLocation())
+}
+
+// get current location and generate geometry search anchor tag
+function getLocation () {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition)
+  } else {
+    geoContainer.innerHTML = 'Geolocation is not supported by this browser.'
+  }
+}
+
+function showPosition (position) {
+  const radius = geoRadius.value
+  // direct to searching by radius
+  window.location.href = `/groups/radius/${position.coords.latitude}/${position.coords.longitude}/${radius}`
+}
+
 // follow/unfollow handler
 async function followHandler (event) {
   try {

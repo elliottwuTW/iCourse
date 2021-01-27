@@ -1,29 +1,48 @@
-{{!-- query --}}
-<form action="/groups">
-  <div class="input-group mb-3 d-flex justify-content-end">
-    <label for="costRange" class="pt-2 mr-2"> 花費 </label>
-    <select name="costRange" id="costRange" class="mr-2">
-      {{#each option.costRange}}
-      <option value="{{@key}}" {{#if (equal ../selectedOption.costRange @key)}} selected {{/if}}>{{this}}</option>
-      {{/each}}
-    </select>
-    <label for="ratingRange" class="pt-2 mr-2"> 評分 </label>
-    <select name="ratingRange" id="ratingRange" class="mr-2">
-      {{#each option.ratingRange}}
-      <option value="{{@key}}" {{#if (equal ../selectedOption.ratingRange @key)}} selected {{/if}}>{{this}}</option>
-      {{/each}}
-    </select>
-    <label for="order" class="pt-2 mr-2"> 排序 </label>
-    <select name="order" id="order">
-      {{#each option.order}}
-      <option value="{{@key}}" {{#if (equal ../selectedOption.order @key)}} selected {{/if}}>{{this}}</option>
-      {{/each}}
-    </select>
-    <div class="input-group-append">
-      <button class="btn btn-outline-secondary" type="submit" id="search-button">Search</button>
+<div class="row justify-content-between">
+  <div class="col-auto d-flex align-items-center" id="geo-container">
+    <div class="input-group mb-3 d-flex justify-content-end">
+      <label for="geo-radius" class="pt-2 mr-2"> 方圓半徑 (km) </label>
+      <input type="number" min="0" id="geo-radius" value="{{geoInfo.radius}}" placeholder="1.2..."
+        style="width: 100px;">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="submit" id="geo-check">以目前位置查詢</button>
+      </div>
     </div>
   </div>
-</form>
+  {{!-- query --}}
+  <div class="col-auto">
+    {{#if geoInfo}}
+    <form action="/groups/radius/{{geoInfo.lat}}/{{geoInfo.lng}}/{{geoInfo.radius}}">
+      {{else}}
+      <form action="/groups">
+        {{/if}}
+        <div class="input-group mb-3 d-flex justify-content-end">
+          <label for="costRange" class="pt-2 mr-2"> 花費 </label>
+          <select name="costRange" id="costRange" class="mr-2">
+            {{#each option.costRange}}
+            <option value="{{@key}}" {{#if (equal ../selectedOption.costRange @key)}} selected {{/if}}>{{this}}</option>
+            {{/each}}
+          </select>
+          <label for="ratingRange" class="pt-2 mr-2"> 評分 </label>
+          <select name="ratingRange" id="ratingRange" class="mr-2">
+            {{#each option.ratingRange}}
+            <option value="{{@key}}" {{#if (equal ../selectedOption.ratingRange @key)}} selected {{/if}}>{{this}}
+            </option>
+            {{/each}}
+          </select>
+          <label for="order" class="pt-2 mr-2"> 排序 </label>
+          <select name="order" id="order">
+            {{#each option.order}}
+            <option value="{{@key}}" {{#if (equal ../selectedOption.order @key)}} selected {{/if}}>{{this}}</option>
+            {{/each}}
+          </select>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" id="search-button">Search</button>
+          </div>
+        </div>
+      </form>
+  </div>
+</div>
 {{!-- groups --}}
 <div class="row" id="groups-wrapper">
   {{#each groups}}
@@ -55,6 +74,14 @@
     </div>
   </div>
   {{/each}}
+  {{!-- remind no result --}}
+  {{#if (equal groups.length 0)}}
+  {{#if geoInfo}}
+  <h4 class="mx-auto mt-5">目前位置方圓 {{geoInfo.radius}} 公里內沒有結果，請放大搜尋半徑或是放寬條件</h4>
+  {{else}}
+  <h4 class="mx-auto mt-5">沒有搜尋條件的結果，請放寬條件</h4>
+  {{/if}}
+  {{/if}}
 </div>
 <br />
 <br />
@@ -63,29 +90,47 @@
   <ul class="pagination">
     {{#if (not (isNull pagination.prev))}}
     <li class="page-item">
+      {{#if geoInfo}}
       <a class="page-link"
-        href="/groups?costRange={{selectedOption.costRange}}&ratingRange={{selectedOption.ratingRange}}&order={{selectedOption.order}}&page={{pagination.prev}}"
+        href="/groups/radius/{{geoInfo.lat}}/{{geoInfo.lng}}/{{geoInfo.radius}}?costRange={{selectedOption.costRange}}&ratingRange={{selectedOption.ratingRange}}&order={{selectedOption.order}}&page={{pagination.prev}}"
         aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
+        {{else}}
+        <a class="page-link"
+          href="/groups?costRange={{selectedOption.costRange}}&ratingRange={{selectedOption.ratingRange}}&order={{selectedOption.order}}&page={{pagination.prev}}"
+          aria-label="Previous">
+          {{/if}}
+          <span aria-hidden="true">&laquo;</span>
+        </a>
     </li>
     {{/if}}
     {{#each pagination.pageArray}}
     {{#if (equal this ../pagination.currentPage)}}
     <li class="page-item active"><a class="page-link" href="#">{{this}}</a></li>
     {{else}}
-    <li class="page-item"><a class="page-link"
+    <li class="page-item">
+      {{#if ../geoInfo}}
+      <a class="page-link"
+        href="/groups/radius/{{../geoInfo.lat}}/{{../geoInfo.lng}}/{{../geoInfo.radius}}?costRange={{../selectedOption.costRange}}&ratingRange={{../selectedOption.ratingRange}}&order={{../selectedOption.order}}&page={{this}}">{{this}}</a>
+      {{else}}
+      <a class="page-link"
         href="/groups?costRange={{../selectedOption.costRange}}&ratingRange={{../selectedOption.ratingRange}}&order={{../selectedOption.order}}&page={{this}}">{{this}}</a>
+      {{/if}}
     </li>
     {{/if}}
     {{/each}}
     {{#if (not (isNull pagination.next))}}
     <li>
+      {{#if geoInfo}}
       <a class="page-link"
-        href="/groups?costRange={{selectedOption.costRange}}&ratingRange={{selectedOption.ratingRange}}&order={{selectedOption.order}}&page={{pagination.next}}"
+        href="/groups/radius/{{geoInfo.lat}}/{{geoInfo.lng}}/{{geoInfo.radius}}?costRange={{selectedOption.costRange}}&ratingRange={{selectedOption.ratingRange}}&order={{selectedOption.order}}&page={{pagination.next}}"
         aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
+        {{else}}
+        <a class="page-link"
+          href="/groups?costRange={{selectedOption.costRange}}&ratingRange={{selectedOption.ratingRange}}&order={{selectedOption.order}}&page={{pagination.next}}"
+          aria-label="Next">
+          {{/if}}
+          <span aria-hidden="true">&raquo;</span>
+        </a>
     </li>
     {{/if}}
   </ul>

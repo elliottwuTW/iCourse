@@ -4,10 +4,11 @@ const router = express.Router()
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 
-const { groupsPage, newGroupPage, groupPage, editGroupPage, createGroup, updateGroup, deleteGroup, newGroupCoursePage, createGroupCourse } = require('../../controllers/groups')
+const { groupsPage, groupsRadiusPage, newGroupPage, groupPage, editGroupPage, createGroup, updateGroup, deleteGroup, newGroupCoursePage, createGroupCourse } = require('../../controllers/groups')
 
 // route
 router.get('/', groupsPage)
+router.get('/radius/:lat/:lng/:radius', groupsRadiusPage)
 router.get('/new', newGroupPage)
 router.get('/:id', groupPage)
 router.get('/:id/edit', editGroupPage)
