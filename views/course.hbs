@@ -40,10 +40,10 @@
 </form>
 {{/if}}
 <blockquote class="blockquote mb-0">
-  <h4><a href="/users/{{this.User.id}}/profile">{{this.User.name}}</a></h4>
-  <h6>{{this.title}}</h6>
-  <p>{{this.text}}</p>
-  <footer class="blockquote-footer">{{toFromNowFormat this.createdAt}}</footer>
+  <a href="/users/{{this.User.id}}/profile">{{this.User.name}}</a>
+  <footer class="blockquote-footer ml-2" style="display: inline;">{{toFromNowFormat this.createdAt}}</footer>
+  <h6 class="mt-2">{{this.title}}</h6>
+  <p style="font-size: medium;">{{this.text}}</p>
 </blockquote>
 <hr />
 {{/each}}
