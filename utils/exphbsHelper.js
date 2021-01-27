@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 module.exports = {
   isUndefined: (object) => object === undefined,
   equal: (a, b) => {
@@ -11,5 +13,6 @@ module.exports = {
     }
   },
   and: (bool1, bool2) => (bool1 && bool2),
-  not: (bool) => !bool
+  not: (bool) => !bool,
+  toFromNowFormat: (time) => moment(time).fromNow()
 }

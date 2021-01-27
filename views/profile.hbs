@@ -2,7 +2,7 @@
   <div class="card-body">
     <div class="row">
       <div class="col-md-3">
-        <h5 class="card-title">{{user.name}} [{{user.role}}]</h5>
+        <h5 class="card-title">{{user.name}} {{#if (not (isUndefined user.role))}}[{{user.role}}]{{/if}}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{user.email}}</h6>
         <ul class="list-unstyled">
           <li><strong>{{follow.groups.length}}</strong> 追蹤群組數</li>

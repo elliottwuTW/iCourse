@@ -16,7 +16,7 @@ router.get('/:id/profile', asyncUtil(async (req, res, next) => {
   // user info
   const isSelf = String(req.user.id) === String(req.params.id)
   if (!isSelf) {
-    user = req.user
+    user = { name: followResult.data.user }
   } else {
     const userResult = await fetchData(req, {
       method: 'get',

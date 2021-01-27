@@ -18,7 +18,7 @@
     <p>{{course.description}}</p>
     <br>
     {{#if isMine}}
-    <a href="/courses/{{course.id}}/edit" class="btn btn-success">編輯課程</a>
+    <a href="/courses/{{course.id}}/edit" class="btn btn-success">修改課程</a>
     <form action="/courses/{{course.id}}?_method=DELETE" method="POST" style="display: inline;">
       <input type="hidden" name="groupId" value="{{course.Group.id}}">
       <button type="submit" class="btn btn-danger" onclick="return deleteCheck()">刪除課程</button>
@@ -32,16 +32,18 @@
 
 <h3>所有評論：</h3>
 {{#each course.Reviews}}
-{{#if ../user.isAdmin}}
+
+{{#if (and (equal ../user.id this.UserId) (not (equal ../user.role 'publisher')) )}}
 <form action="/reviews/{{this.id}}?_method=DELETE" method="POST" style="float: right;">
-  <button type="submit" class="btn btn-danger">Delete</button>
+  <input type="hidden" name="courseId" value="{{course.id}}">
+  <button type="submit" class="btn btn-danger" onclick="return deleteCheck()">刪除</button>
 </form>
 {{/if}}
 <blockquote class="blockquote mb-0">
-  <h4><a href="/users/{{this.User.id}}">{{this.User.name}}</a></h4>
+  <h4><a href="/users/{{this.User.id}}/profile">{{this.User.name}}</a></h4>
   <h6>{{this.title}}</h6>
   <p>{{this.text}}</p>
-  {{!-- <footer class="blockquote-footer">{{toFromNowFormat this.createdAt}}</footer> --}}
+  <footer class="blockquote-footer">{{toFromNowFormat this.createdAt}}</footer>
 </blockquote>
 <hr />
 {{/each}}
@@ -49,6 +51,13 @@
 <br>
 <br>
 
+{{#if (not loggedIn)}}
+<em>登入，即可留下評論</em>
+<br>
+{{else if (equal user.role 'publisher')}}
+<em>Publisher 不可留下評論</em>
+<br>
+{{else}}
 <h4>留下評論：</h4>
 <form action="/courses/{{course.id}}/reviews" method="POST">
   <div class="form-group">
@@ -56,9 +65,14 @@
     <input type="text" class="form-control" name="title" id="title" placeholder="Enter title...">
   </div>
   <div class="form-group">
+    <label for="rating">評分: </label>
+    <input type="number" class="form-control" name="rating" id="rating" placeholder="1 ~ 10" step="1" min="1" max="10">
+  </div>
+  <div class="form-group">
     <label for="text">內容: </label>
     <textarea class="form-control" name="text" id="text" rows="3"></textarea>
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+{{/if}}
 <a href="javascript:history.back()">回上一頁</a>
