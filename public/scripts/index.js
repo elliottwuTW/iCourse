@@ -1,8 +1,16 @@
+const url = window.location.href
+
 // display navbar
 document.addEventListener('DOMContentLoaded', async function () {
   try {
     const currentUser = await ajax({ method: 'get', path: '/auth/me' })
     renderNavbar(currentUser)
+
+    // single group page
+    if (url.match(/groups\/\d$/)) {
+      // last part of url such as "groups/7"
+      fetchAllGroupCourses(url)
+    }
   } catch (err) {
     console.error(err)
     renderNavbar({ status: 'error' })
@@ -26,6 +34,29 @@ const geoRadius = document.querySelector('#geo-radius')
 if (geoCheck) {
   geoCheck.addEventListener('click', e => getLocation())
 }
+
+// query a group courses
+const tuition = document.querySelector('#tuitionRange')
+const hours = document.querySelector('#hoursRange')
+const orderCourse = document.querySelector('#order-course')
+if (url.match(/groups\/\d$/)) {
+  tuition.addEventListener('change', e => {
+    const query = { tuition: tuition.value, hours: hours.value, order: orderCourse.value }
+    fetchAllGroupCourses(url, query)
+  })
+  hours.addEventListener('change', e => {
+    const query = { tuition: tuition.value, hours: hours.value, order: orderCourse.value }
+    fetchAllGroupCourses(url, query)
+  })
+  orderCourse.addEventListener('change', e => {
+    const query = { tuition: tuition.value, hours: hours.value, order: orderCourse.value }
+    fetchAllGroupCourses(url, query)
+  })
+}
+
+/**
+ * Functions
+ */
 
 // get current location and generate geometry search anchor tag
 function getLocation () {
@@ -132,4 +163,96 @@ function renderNavbar (response) {
 
 function deleteCheck () {
   return window.confirm('確認要刪除?')
+}
+
+// fetch all group courses based on query
+async function fetchAllGroupCourses (url, query = {}) {
+  const groupId = url.slice(url.lastIndexOf('/') + 1)
+  const coursesResult = await ajax({ method: 'get', path: `/groups/${groupId}/courses?page=1&limit=99999&${generateQueryParam(query)}` })
+  renderGroupCourses(coursesResult.data)
+}
+
+// generate query params for fetching group's courses
+function generateQueryParam (query) {
+// { tuition: tuition.value, hours: hours.value, order: orderCourse.value }
+  const queryArray = Object.entries(query)
+
+  // generate query params
+  const queryParam = []
+  queryArray.forEach(item => {
+    // order
+    if (item[0] === 'order' && item[1] !== '') {
+      queryParam.push(`order=-${item[1]}`)
+    }
+    // tuition
+    if (item[0] === 'tuition') {
+      switch (item[1]) {
+        case '-5000':
+          queryParam.push('tuition[lte]=5000')
+          break
+        case '5001-10000':
+          queryParam.push('tuition[gt]=5000&tuition[lte]=10000')
+          break
+        case '10001-15000':
+          queryParam.push('tuition[gt]=10000&tuition[lte]=15000')
+          break
+        case '15001-20000':
+          queryParam.push('tuition[gt]=15000&tuition[lte]=20000')
+          break
+        case '20000-':
+          queryParam.push('tuition[gt]=20000')
+          break
+        default:
+          break
+      }
+    }
+    // hours
+    if (item[0] === 'hours') {
+      switch (item[1]) {
+        case '1-20':
+          queryParam.push('hours[gte]=1&hours[lte]=20')
+          break
+        case '21-40':
+          queryParam.push('hours[gte]=21&hours[lte]=40')
+          break
+        case '41-60':
+          queryParam.push('hours[gte]=41&hours[lte]=60')
+          break
+        case '61-':
+          queryParam.push('hours[gte]=61')
+          break
+        default:
+          break
+      }
+    }
+  })
+
+  return queryParam.join('&')
+}
+
+// render courses of a group
+function renderGroupCourses (courses) {
+  const coursesContainer = document.querySelector('#courses-container')
+  coursesContainer.innerHTML = ''
+  courses.forEach(course => {
+    coursesContainer.innerHTML += `
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <img class="card-img-top" src="${course.photo}" alt="Card image cap" width="286px" height="180px">
+        <div class="card-body">
+          <p class="card-text">
+            <a href="/courses/${course.id}">
+              ${course.name}
+            </a>
+          </p>
+          <p class="card-text d-flex justify-content-between">
+            <span><b>$${course.tuition}</b></span>
+            <span style="color: #54A2B0;"><b>${course.hours} hrs</b></span>
+          </p>
+          <p class="card-text">${course.description}</p>
+        </div>
+      </div>
+    </div>
+    `
+  })
 }

@@ -6,6 +6,7 @@ const generateQueryParam = require('../utils/generateQueryParam')
 const generatePagination = require('../utils/generatePagination')
 
 const groupOption = require('../data/group.json')
+const courseOption = require('../data/course.json')
 
 // @desc    get all groups (main page)
 // @route   GET /groups
@@ -100,7 +101,8 @@ exports.groupPage = asyncUtil(async (req, res, next) => {
   return res.render('group', {
     loggedIn: (req.user.id !== undefined),
     isMine: (req.user.id === group.User.id),
-    group
+    group,
+    option: courseOption
   })
 })
 

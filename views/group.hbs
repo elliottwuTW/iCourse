@@ -42,24 +42,36 @@
 <br />
 <br />
 
-<h3>所有課程：</h3>
-<div class="row">
-  {{#each group.Courses}}
-  <div class="col-md-4">
-    <div class="card mb-4 shadow-sm">
-      <img class="card-img-top" src="{{this.photo}}" alt="Card image cap" width="286px" height="180px">
-      <div class="card-body">
-        <p class="card-text">
-          <a href="/courses/{{this.id}}">
-            {{this.name}}
-          </a>
-        </p>
-        <p class="card-text">{{this.description}}</p>
-        <p class="card-text">{{this.hours}}</p>
-        <p class="card-text">{{this.tuition}}</p>
-      </div>
+<div class="row justify-content-between">
+  <h3 class="col-auto">
+    所有課程：
+  </h3>
+  <div class="col-auto">
+    <div class="input-group mb-3 d-flex justify-content-end">
+      <label for="tuitionRange" class="pt-2 mr-2"> 學費 </label>
+      <select name="tuitionRange" id="tuitionRange" class="mr-2">
+        {{#each option.tuitionRange}}
+        <option value="{{@key}}">{{this}}
+        </option>
+        {{/each}}
+      </select>
+      <label for="hoursRange" class="pt-2 mr-2"> 時數 </label>
+      <select name="hoursRange" id="hoursRange" class="mr-2">
+        {{#each option.hoursRange}}
+        <option value="{{@key}}">{{this}}
+        </option>
+        {{/each}}
+      </select>
+      <label for="order-course" class="pt-2 mr-2"> 排序 </label>
+      <select name="order" id="order-course">
+        {{#each option.order}}
+        <option value="{{@key}}">{{this}}</option>
+        {{/each}}
+      </select>
     </div>
   </div>
-  {{/each}}
 </div>
-<a href="javascript:history.back()">回上一頁</a>
+
+<div class="row" id="courses-container">
+  {{!-- asynchronously generate --}}
+</div>
