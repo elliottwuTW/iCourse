@@ -1,23 +1,29 @@
+const url = window.location.href
 // display navbar
 document.addEventListener('DOMContentLoaded', async function () {
   try {
-    if (getCookie().token) {
-      const currentUser = await ajax({ method: 'get', path: '/auth/me' })
-      renderNavbar(currentUser)
+    const token = getCookie().token
+    let currentUserResult
+    if (token) {
+      currentUserResult = await getCurrentUser()
+      renderNavbar(currentUserResult)
     } else {
       renderNavbar({ status: 'error' })
+    }
+
+    // single group page
+    if (url.match(/groups\/\d$/)) {
+      // last part of url such as "groups/7"
+      await fetchAllGroupCourses(url)
+    }
+    // single course page
+    if (url.match(/courses\/\d$/)) {
+      fetchAllCourseReviews(url, (token ? currentUserResult.data : undefined))
     }
   } catch (err) {
     console.error(err)
   }
 })
-
-const url = window.location.href
-// single group page
-if (url.match(/groups\/\d$/)) {
-  // last part of url such as "groups/7"
-  fetchAllGroupCourses(url)
-}
 
 // follow & unfollow
 const groupsWrapper = document.querySelector('#groups-wrapper')
@@ -59,6 +65,10 @@ if (url.match(/groups\/\d$/)) {
 /**
  * Functions
  */
+
+async function getCurrentUser () {
+  return await ajax({ method: 'get', path: '/auth/me' })
+}
 
 // get current location and generate geometry search anchor tag
 function getLocation () {
@@ -174,6 +184,13 @@ async function fetchAllGroupCourses (url, query = {}) {
   renderGroupCourses(coursesResult.data)
 }
 
+// fetch all course reviews
+async function fetchAllCourseReviews (url, currentUser) {
+  const courseId = url.slice(url.lastIndexOf('/') + 1)
+  const reviewsResult = await ajax({ method: 'get', path: `/courses/${courseId}/reviews?page=1&limit=99999` })
+  renderCourseReviews(reviewsResult.data, currentUser)
+}
+
 // generate query params for fetching group's courses
 function generateQueryParam (query) {
 // { tuition: tuition.value, hours: hours.value, order: orderCourse.value }
@@ -257,4 +274,38 @@ function renderGroupCourses (courses) {
     </div>
     `
   })
+}
+
+// render reviews of a course
+function renderCourseReviews (reviews, currentUser) {
+  const reviewsContainer = document.querySelector('#reviews-container')
+  reviewsContainer.innerHTML = ''
+  reviews.forEach(review => {
+    let displayDelete = false
+    if (currentUser && currentUser.id === review.UserId && currentUser.role !== 'publisher') {
+      displayDelete = true
+    }
+    // display delete button
+    reviewsContainer.innerHTML += !displayDelete ? '' : `
+    <form action="/reviews/${review.id}?_method=DELETE" method="POST" style="float: right;">
+    <input type="hidden" name="courseId" value="${review.CourseId}">
+    <button type="submit" class="btn btn-danger" onclick="return deleteCheck()">刪除</button>
+  </form>
+    `
+    // review content
+    reviewsContainer.innerHTML += `
+    <blockquote class="blockquote mb-0">
+    <a ${currentUser ? `href="/users/${review.UserId}/profile"` : ''}>${review.User.name}</a>
+    <footer class="blockquote-footer ml-2" style="display: inline;">${toFromNowFormat(review.createdAt)}</footer>
+    <h6 class="mt-2">${review.title}</h6>
+    <p style="font-size: medium;">${review.text}</p>
+  </blockquote>
+  <hr />
+    `
+  })
+}
+
+// format the time
+function toFromNowFormat (utc) {
+  return moment(utc).fromNow()
 }

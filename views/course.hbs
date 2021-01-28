@@ -31,22 +31,9 @@
 <br />
 
 <h3>所有評論：</h3>
-{{#each course.Reviews}}
-
-{{#if (and (equal ../user.id this.UserId) (not (equal ../user.role 'publisher')) )}}
-<form action="/reviews/{{this.id}}?_method=DELETE" method="POST" style="float: right;">
-  <input type="hidden" name="courseId" value="{{course.id}}">
-  <button type="submit" class="btn btn-danger" onclick="return deleteCheck()">刪除</button>
-</form>
-{{/if}}
-<blockquote class="blockquote mb-0">
-  <a {{#if loggedIn}} href="/users/{{this.User.id}}/profile" {{/if}}>{{this.User.name}}</a>
-  <footer class="blockquote-footer ml-2" style="display: inline;">{{toFromNowFormat this.createdAt}}</footer>
-  <h6 class="mt-2">{{this.title}}</h6>
-  <p style="font-size: medium;">{{this.text}}</p>
-</blockquote>
-<hr />
-{{/each}}
+<div id="reviews-container">
+  {{!-- asynchronously fetch --}}
+</div>
 
 <br>
 <br>
