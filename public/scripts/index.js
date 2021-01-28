@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // single group page
-    if (url.match(/groups\/\d$/)) {
+    if (url.match(/groups\/\d*$/)) {
       // last part of url such as "groups/7"
       await fetchAllGroupCourses(url)
     }
     // single course page
-    if (url.match(/courses\/\d$/)) {
+    if (url.match(/courses\/\d*$/)) {
       fetchAllCourseReviews(url, (token ? currentUserResult.data : undefined))
     }
   } catch (err) {
