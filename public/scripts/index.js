@@ -1,21 +1,23 @@
-const url = window.location.href
-
 // display navbar
 document.addEventListener('DOMContentLoaded', async function () {
   try {
-    const currentUser = await ajax({ method: 'get', path: '/auth/me' })
-    renderNavbar(currentUser)
-
-    // single group page
-    if (url.match(/groups\/\d$/)) {
-      // last part of url such as "groups/7"
-      fetchAllGroupCourses(url)
+    if (getCookie().token) {
+      const currentUser = await ajax({ method: 'get', path: '/auth/me' })
+      renderNavbar(currentUser)
+    } else {
+      renderNavbar({ status: 'error' })
     }
   } catch (err) {
     console.error(err)
-    renderNavbar({ status: 'error' })
   }
 })
+
+const url = window.location.href
+// single group page
+if (url.match(/groups\/\d$/)) {
+  // last part of url such as "groups/7"
+  fetchAllGroupCourses(url)
+}
 
 // follow & unfollow
 const groupsWrapper = document.querySelector('#groups-wrapper')

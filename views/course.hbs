@@ -40,7 +40,7 @@
 </form>
 {{/if}}
 <blockquote class="blockquote mb-0">
-  <a href="/users/{{this.User.id}}/profile">{{this.User.name}}</a>
+  <a {{#if loggedIn}} href="/users/{{this.User.id}}/profile" {{/if}}>{{this.User.name}}</a>
   <footer class="blockquote-footer ml-2" style="display: inline;">{{toFromNowFormat this.createdAt}}</footer>
   <h6 class="mt-2">{{this.title}}</h6>
   <p style="font-size: medium;">{{this.text}}</p>
@@ -75,4 +75,3 @@
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 {{/if}}
-<a href="javascript:history.back()">回上一頁</a>
