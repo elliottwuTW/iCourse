@@ -14,12 +14,8 @@ exports.login = asyncUtil(async (req, res, next) => {
     data: { ...req.body }
   })
 
-  if (loginResult.status === 'success') {
-    res.cookie('token', loginResult.token)
-    return res.redirect('/')
-  } else {
-    return res.send(loginResult.message)
-  }
+  res.cookie('token', loginResult.token)
+  return res.redirect('/')
 })
 
 // logout
@@ -47,4 +43,42 @@ exports.register = asyncUtil(async (req, res, next) => {
   } else {
     return res.send(registerResult.message)
   }
+})
+
+// forgot password page
+exports.forgotPasswordPage = (req, res, next) => {
+  return res.render('forgotpassword')
+}
+
+// forgot password
+exports.forgotPassword = asyncUtil(async (req, res, next) => {
+  const forgotPasswordResult = await fetchData(req, {
+    method: 'post',
+    path: '/auth/forgotpassword',
+    data: { email: req.body.email }
+  })
+  if (forgotPasswordResult.status === 'success') {
+    return res.render('forgotpassword', {
+      result: 'Email sent successfully. Please check your email to reset password!'
+    })
+  }
+})
+
+// reset password page
+exports.resetPasswordPage = (req, res, next) => {
+  return res.render('resetpassword', {
+    token: req.params.token
+  })
+}
+
+// reset password
+exports.resetPassword = asyncUtil(async (req, res, next) => {
+  const resetPasswordResult = await fetchData(req, {
+    method: 'put',
+    path: `/auth/resetpassword/${req.params.token}`,
+    data: { ...req.body }
+  })
+
+  res.cookie('token', resetPasswordResult.token)
+  return res.redirect('/')
 })
