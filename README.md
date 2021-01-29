@@ -2,7 +2,7 @@
 A course directory website for everyone's learning
 
 ### Main Page
-![]()
+![](https://raw.githubusercontent.com/elliottwuTW/iCourse/master/public/main-page.png)
 
 ### Features
 
@@ -28,7 +28,7 @@ Users can
 
 ### Demo
 
-[iCourse]()
+[iCourse](https://icourse-tw.herokuapp.com/)
 
 ### Mock Account
 #### Publisher
