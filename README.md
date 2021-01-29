@@ -10,9 +10,11 @@ Users/Publishers can
 
 - browse and filter all groups by settings or geometry location
 - browse and filter all courses of a group by settings
+- see group's count of courses and reviews
 - follow groups to receive new course notification
 - see other peoples' following groups
 - manage their profile
+- reset password when forgot it
 
 Publishers can
 
