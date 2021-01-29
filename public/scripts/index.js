@@ -112,7 +112,7 @@ async function followHandler (event) {
 // axios request
 async function ajax (option) {
   // api url
-  const DOMAIN = 'http://localhost:3000'
+  const DOMAIN = 'https://icourse-api.herokuapp.com'
   const BASE_URL = DOMAIN + '/api/v1'
   const token = getCookie().token || null
 
@@ -181,6 +181,7 @@ function deleteCheck () {
 async function fetchAllGroupCourses (url, query = {}) {
   const groupId = url.slice(url.lastIndexOf('/') + 1)
   const coursesResult = await ajax({ method: 'get', path: `/groups/${groupId}/courses?page=1&limit=99999&${generateQueryParam(query)}` })
+  console.log(coursesResult)
   renderGroupCourses(coursesResult.data)
 }
 
@@ -254,10 +255,11 @@ function renderGroupCourses (courses) {
   const coursesContainer = document.querySelector('#courses-container')
   coursesContainer.innerHTML = ''
   courses.forEach(course => {
+    const photo = course.photo ? course.photo : 'https://i.imgur.com/5UyZUWd.png'
     coursesContainer.innerHTML += `
     <div class="col-md-4">
       <div class="card mb-4 shadow-sm">
-        <img class="card-img-top" src="${course.photo}" alt="Card image cap" width="286px" height="180px">
+        <img class="card-img-top" src="${photo}" alt="Card image cap" width="286px" height="180px">
         <div class="card-body">
           <p class="card-text">
             <a href="/courses/${course.id}">

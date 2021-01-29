@@ -1,10 +1,10 @@
 const axios = require('axios')
 
-// api url
-const DOMAIN = process.env.DOMAIN || 'http://localhost:3000'
-const BASE_URL = DOMAIN + '/api/v1'
-
 const fetchData = async (req, option) => {
+  // api url
+  const DOMAIN = process.env.DOMAIN || 'http://localhost:3000'
+  const BASE_URL = DOMAIN + '/api/v1'
+
   const token = req.cookies.token ? req.cookies.token : ''
   const config = {
     headers: { ...option.config, authorization: `Bearer ${token}` }
