@@ -299,6 +299,7 @@ function renderCourseReviews (reviews, currentUser) {
     <blockquote class="blockquote mb-0">
     <a ${currentUser ? `href="/users/${review.UserId}/profile"` : ''}>${review.User.name}</a>
     <footer class="blockquote-footer ml-2" style="display: inline;">${toFromNowFormat(review.createdAt)}</footer>
+    <small style="color: #EB8A2F; display: block;"><b>${review.rating} / 10</b></small>
     <h6 class="mt-2">${review.title}</h6>
     <p style="font-size: medium;">${review.text}</p>
   </blockquote>

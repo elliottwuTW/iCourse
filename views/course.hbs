@@ -3,7 +3,8 @@
     <h1>{{course.name}}</h1>
   </div>
   <div class="col-md-4">
-    <img class="img-responsive center-block" src="{{course.photo}}" alt="Card image cap"
+    <img class="img-responsive center-block" src={{#if
+      course.photo}}{{course.photo}}{{else}}'https://i.imgur.com/5UyZUWd.png'{{/if}} alt="Card image cap"
       style="width: 250px;margin-bottom: 25px;">
   </div>
   <div class="col-md-8">
