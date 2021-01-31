@@ -378,20 +378,21 @@ async function fetchCartCoursesInfo () {
       method: 'get',
       path: `/courses/${courseId}`
     })))
-    renderCartPage(courses.map(course => course.data))
+    await renderCartPage(courses.map(course => course.data))
   } catch (err) {
     console.error(err)
   }
 }
 
 // render course info in the cart page
-function renderCartPage (courses) {
+async function renderCartPage (courses) {
   const totalPrice = courses.reduce((acc, cur, index, arr) => {
     cur = arr[index].tuition
     return acc + cur
   }, 0)
 
   const cartBodyContainer = document.querySelector('#cart-body-container')
+  const orderContainer = document.querySelector('#order-container')
   cartBodyContainer.innerHTML = ''
   courses.forEach(course => {
     const photo = course.photo ? course.photo : 'https://i.imgur.com/5UyZUWd.png'
@@ -418,9 +419,38 @@ function renderCartPage (courses) {
     <td>
       <h2>Total: ${totalPrice}</h2>
     </td>
-    <td></td>
   </tr>
   `
+
+  // form to create order
+  const courseInfo = {}
+  courses.forEach(course => {
+    courseInfo[course.id] = course.tuition
+  })
+  orderContainer.innerHTML = `
+    <form action="/orders" method="POST" onsubmit="clearCart()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="text" class="form-control" id="phone" placeholder="Enter phone" name="phone" required>
+      </div>
+      <div class="form-group">
+        <label for="address">Address</label>
+        <input type="text" class="form-control" id="address" placeholder="Enter address" name="address" required>
+      </div>
+      <input type="hidden" name="amount" value="${totalPrice}">
+      <input type="hidden" name="courseInfoString" value=${JSON.stringify(courseInfo)}>
+      ${getCookie().token ? '<button type="submit" class="btn btn-primary">馬上下訂</button>' : '<em>登入，即可下訂</em>'}
+    </form>
+  `
+}
+
+function clearCart () {
+  cart.splice(0, cart.length)
+  updateCartLocalStorage()
 }
 
 // handle remove course from cart

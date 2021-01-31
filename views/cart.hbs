@@ -1,16 +1,20 @@
 <h1>顯示購物車</h1>
 
-<div>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Price</th>
-        <th scope="col">#</th>
-      </tr>
-    </thead>
-    <tbody id="cart-body-container">
-      {{!-- asynchronously generate --}}
-    </tbody>
-  </table>
+<div class="row">
+  <div class="col-md-8">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Price</th>
+          <th scope="col">#</th>
+        </tr>
+      </thead>
+      <tbody id="cart-body-container">
+        {{!-- asynchronously generate --}}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-4 mx-auto" id="order-container">
+  </div>
 </div>
