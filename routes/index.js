@@ -17,5 +17,8 @@ router.use('/users', currentUser, users)
 router.use('/groups', currentUser, groups)
 router.use('/courses', currentUser, courses)
 router.use('/reviews', currentUser, reviews)
+router.get('/cart', (req, res, next) => {
+  return res.render('cart')
+})
 
 module.exports = router
