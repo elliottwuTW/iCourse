@@ -36,11 +36,11 @@
 
     <div style="display: flex; justify-content: space-around;min-width: 300px;">
       <form action="/orders/{{this.id}}/cancel?_method=PUT" method="POST">
-        <button type="submit" class="btn btn-warning" {{#if (equal this.paymentStatus -1)}}disabled{{/if}}>取消訂單</button>
+        <button type="submit" class="btn btn-warning" {{#if (notEq this.paymentStatus 0)}}disabled{{/if}}>取消訂單</button>
       </form>
 
-      <a href="/orders/{{this.id}}/payment"><button class="btn btn-success" {{#if (equal this.paymentStatus
-          -1)}}disabled{{/if}}>立即付款</button></a>
+      <a href="/orders/{{this.id}}/payment"><button class="btn btn-success" {{#if (notEq this.paymentStatus
+          0)}}disabled{{/if}}>立即付款</button></a>
     </div>
   </div>
 </div>

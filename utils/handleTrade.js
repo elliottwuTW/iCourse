@@ -20,14 +20,13 @@ const encryptAES256 = (data, HashKey, HashIV) => {
   return encrypted + encipher.final('hex')
 }
 
-// function create_mpg_aes_decrypt (TradeInfo, HashKey, HashIV) {
-//   const decrypt = crypto.createDecipheriv('aes256', HashKey, HashIV)
-//   decrypt.setAutoPadding(false)
-//   const text = decrypt.update(TradeInfo, 'hex', 'utf8')
-//   const plainText = text + decrypt.final('utf8')
-//   const result = plainText.replace(/[\x00-\x20]+/g, '')
-//   return result
-// }
+// Decrypt data
+const decryptAES256 = (data, HashKey, HashIV) => {
+  const decrypt = crypto.createDecipheriv('aes256', HashKey, HashIV)
+  decrypt.setAutoPadding(false)
+  const text = decrypt.update(data, 'hex', 'utf8')
+  return (text + decrypt.final('utf8')).replace(/[\x00-\x20]+/g, '')
+}
 
 // Hash data with SHA 256 algorithm
 const hashSHA256 = (data, HashKey, HashIV) => {
@@ -40,8 +39,7 @@ const hashSHA256 = (data, HashKey, HashIV) => {
 // Return trade info needed in spgateway
 const getTradeInfo = (amount, orderDesc, email) => {
   // env variables
-  const API_SERVER_URL = process.env.DOMAIN
-  const SERVER_URL = process.env.SERVER_URL || ''
+  const URL = process.env.URL
   const PayURL = process.env.PAY_URL
   const MerchantID = process.env.MERCHANT_ID
   const Version = process.env.SPGATEWAY_VERSION
@@ -61,12 +59,9 @@ const getTradeInfo = (amount, orderDesc, email) => {
     ItemDesc: orderDesc,
     OrderComment: 'Wish you a good learning',
     Email: email,
-    NotifyURL: 'https://edb1d2d03c5e.ngrok.io/api/v1/orders/spgateway/callback/notify',
-    ReturnURL: 'https://ac13d625d0c0.ngrok.io/orders/spgateway/callback/return',
-    ClientBackURL: 'https://ac13d625d0c0.ngrok.io/orders'
-    // NotifyURL: API_SERVER_URL + '/spgateway/callback/notify',
-    // ReturnURL: SERVER_URL + '/spgateway/callback/return',
-    // ClientBackURL: SERVER_URL + '/orders'
+    NotifyURL: URL + '/orders/spgateway/callback?from=Notify',
+    ReturnURL: URL + '/orders/spgateway/callback?from=Return',
+    ClientBackURL: URL + '/orders'
   }
 
   const encryptedTradeInfo = encryptAES256(data, HashKey, HashIV)
@@ -77,8 +72,9 @@ const getTradeInfo = (amount, orderDesc, email) => {
     TradeInfo: encryptedTradeInfo, // 加密後參數
     TradeSha: hashSHA256(encryptedTradeInfo, HashKey, HashIV),
     Version, // 串接程式版本
-    PayURL
+    PayURL,
+    sn: data.MerchantOrderNo
   })
 }
 
-module.exports = getTradeInfo
+module.exports = { getTradeInfo, decryptAES256 }
