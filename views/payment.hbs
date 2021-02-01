@@ -1,0 +1,35 @@
+<h3>準備為訂單編號： {{order.id}} 付款 </h3>
+<div class="row">
+  <div class="col-md-5">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Product</th>
+          <th scope="col">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each order.courses}}
+        <tr>
+          <td>{{this.name}}</td>
+          <td>{{this.OrderCourse.price}}</td>
+        </tr>
+        {{/each}}
+        <tr>
+          <td></td>
+          <td>
+            <h4>Total: {{order.amount}}</h4>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<form name='Spgateway' action='{{tradeInfo.PayURL}}' method="POST">
+  <input type="hidden" name="MerchantID" value="{{tradeInfo.MerchantID}}"><br>
+  <input type="hidden" name="TradeInfo" value="{{tradeInfo.TradeInfo}}"><br>
+  <input type="hidden" name="TradeSha" value="{{tradeInfo.TradeSha}}"><br>
+  <input type="hidden" name="Version" value="{{tradeInfo.Version}}"><br>
+  <button type="submit" class="btn btn-primary">確認交易</button>
+</form>
