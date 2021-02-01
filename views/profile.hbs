@@ -5,10 +5,12 @@
         <h5 class="card-title">{{user.name}} {{#if (not (isUndefined user.role))}}[{{user.role}}]{{/if}}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{user.email}}</h6>
         <ul class="list-unstyled">
-          <li><strong>{{follow.groups.length}}</strong> 追蹤群組數</li>
+          <li><strong>{{follow.length}}</strong> 追蹤群組數</li>
+          <li><strong>{{enrollment.length}}</strong> 學習課程數 </li>
         </ul>
         {{#if isSelf}}
         <a href="/users/profile/edit" class="btn btn-primary mt-3">編輯個人檔案</a>
+        <a href="/orders" class="btn btn-secondary mt-3">我的訂單</a>
         {{/if}}
       </div>
       <div class="col-md-9">
@@ -39,12 +41,27 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <strong>{{follow.groups.length}}</strong> 追蹤的群組
+        <strong>{{follow.length}}</strong> 追蹤的群組
       </div>
       <div class="card-body">
-        {{#each follow.groups}}
+        {{#each follow}}
         <a href="/groups/{{this.id}}">
           <img src="{{this.photo}}" width="60px" height="60px" class="avatar">
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <strong>{{enrollment.length}}</strong> 學習的課程
+      </div>
+      <div class="card-body">
+        {{#each enrollment}}
+        <a href="/courses/{{this.id}}">
+          <img src={{#if this.photo}}{{this.photo}}{{else}}'https://i.imgur.com/5UyZUWd.png'{{/if}} width="60px"
+            height="60px" class="avatar">
         </a>
         {{/each}}
       </div>

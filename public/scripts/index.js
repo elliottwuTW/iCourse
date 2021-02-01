@@ -1,4 +1,5 @@
 const url = window.location.href
+const cart = JSON.parse(localStorage.getItem('cart')) || []
 // display navbar
 document.addEventListener('DOMContentLoaded', async function () {
   try {
@@ -18,7 +19,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     // single course page
     if (url.match(/courses\/\d*$/)) {
-      fetchAllCourseReviews(url, (token ? currentUserResult.data : undefined))
+      await fetchAllCourseReviews(url, (token ? currentUserResult.data : undefined))
+    }
+
+    // cart page
+    if (url.match(/cart$/)) {
+      await fetchCartCoursesInfo()
+      // handle remove course from cart
+      document.querySelector('#cart-body-container').addEventListener('click', cartPageHandler)
     }
   } catch (err) {
     console.error(err)
@@ -60,6 +68,19 @@ if (url.match(/groups\/\d$/)) {
     const query = { tuition: tuition.value, hours: hours.value, order: orderCourse.value }
     fetchAllGroupCourses(url, query)
   })
+}
+
+// single course - display add/remove course to/from cart
+const courseCart = document.querySelector('#course-cart')
+if (courseCart) {
+  const courseId = courseCart.dataset.courseId
+  if (cart.includes(courseId)) {
+    courseCart.innerHTML = `<button class="btn btn-warning remove-from-cart" data-course-id="${courseId}">移出購物車</button>`
+  } else {
+    courseCart.innerHTML = `<button class="btn btn-success add-to-cart" data-course-id="${courseId}">加入購物車</button>`
+  }
+  // cart operation handler
+  courseCart.addEventListener('click', cartHandler)
 }
 
 /**
@@ -154,6 +175,8 @@ function getCookie () {
 function renderNavbar (response) {
   const navbarContainer = document.querySelector('#navbar-container')
   navbarContainer.innerHTML = ''
+  // cart
+  navbarContainer.innerHTML += '<a href="/cart"><button class="btn btn-outline-info my-2 my-sm-0 mr-2">Cart</button></a>'
   if (response.status === 'success') {
     const user = response.data
     navbarContainer.innerHTML += (user.role !== 'admin')
@@ -253,6 +276,9 @@ function generateQueryParam (query) {
 // render courses of a group
 function renderGroupCourses (courses) {
   const coursesContainer = document.querySelector('#courses-container')
+  // groups course - display add/remove course to/from cart
+  coursesContainer.addEventListener('click', cartHandler)
+
   coursesContainer.innerHTML = ''
   courses.forEach(course => {
     const photo = course.photo ? course.photo : 'https://i.imgur.com/5UyZUWd.png'
@@ -271,6 +297,10 @@ function renderGroupCourses (courses) {
             <span style="color: #54A2B0;"><b>${course.hours} hrs</b></span>
           </p>
           <p class="card-text">${course.description}</p>
+          ${cart.includes(String(course.id)) ?
+            `<button class="btn btn-warning remove-from-cart" data-course-id=${course.id}>移出購物車</button>` :
+            `<button class="btn btn-success add-to-cart" data-course-id=${course.id}>加入購物車</button>`
+          }
         </div>
       </div>
     </div>
@@ -311,4 +341,128 @@ function renderCourseReviews (reviews, currentUser) {
 // format the time
 function toFromNowFormat (utc) {
   return moment(utc).fromNow()
+}
+
+// add-to-cart/remove-from-cart handler
+function cartHandler (event) {
+  const target = event.target
+  const clickAddToCart = target.matches('.add-to-cart')
+  const clickRemoveFromCart = target.matches('.remove-from-cart')
+  if (clickAddToCart || clickRemoveFromCart) {
+    const courseId = target.dataset.courseId
+    // add to cart
+    if (clickAddToCart) {
+      cart.push(courseId)
+      target.classList.remove('btn-success', 'add-to-cart')
+      target.classList.add('btn-warning', 'remove-from-cart')
+      target.innerText = '移出購物車'
+    } else {
+      cart.splice(cart.indexOf(courseId), 1)
+      target.classList.remove('btn-warning', 'remove-from-cart')
+      target.classList.add('btn-success', 'add-to-cart')
+      target.innerText = '加入購物車'
+    }
+    updateCartLocalStorage()
+  }
+}
+
+// update cart array to local storage
+function updateCartLocalStorage () {
+  localStorage.setItem('cart', JSON.stringify(cart))
+}
+
+// fetch courses info by course ids in cart and render cart page
+async function fetchCartCoursesInfo () {
+  try {
+    const courses = await Promise.all(cart.map(courseId => ajax({
+      method: 'get',
+      path: `/courses/${courseId}`
+    })))
+    await renderCartPage(courses.map(course => course.data))
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// render course info in the cart page
+async function renderCartPage (courses) {
+  const totalPrice = courses.reduce((acc, cur, index, arr) => {
+    cur = arr[index].tuition
+    return acc + cur
+  }, 0)
+
+  const cartBodyContainer = document.querySelector('#cart-body-container')
+  const orderContainer = document.querySelector('#order-container')
+  cartBodyContainer.innerHTML = ''
+  courses.forEach(course => {
+    const photo = course.photo ? course.photo : 'https://i.imgur.com/5UyZUWd.png'
+    cartBodyContainer.innerHTML += `
+      <tr>
+        <td>
+          <div style="display: flow-root;">
+            <img src="${photo}" class="card-img" alt="..." style="height: 50px;width: auto;">
+            <a href="/courses/${course.id}"><span>${course.name}</span></a>
+          </div>
+        </td>
+        <td>
+          <p>$ ${course.tuition}</p>
+        </td>
+        <td>
+          <button class="btn btn-warning remove-from-cart" data-course-id=${course.id}>移出購物車</button>
+        </td>
+      </tr>
+    `
+  })
+  cartBodyContainer.innerHTML += `
+  <tr>
+    <td></td>
+    <td>
+      <h2>Total: ${totalPrice}</h2>
+    </td>
+  </tr>
+  `
+
+  // form to create order
+  const courseInfo = {}
+  courses.forEach(course => {
+    courseInfo[course.id] = course.tuition
+  })
+  orderContainer.innerHTML = `
+    <form action="/orders" method="POST" onsubmit="clearCart()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="text" class="form-control" id="phone" placeholder="Enter phone" name="phone" required>
+      </div>
+      <div class="form-group">
+        <label for="address">Address</label>
+        <input type="text" class="form-control" id="address" placeholder="Enter address" name="address" required>
+      </div>
+      <input type="hidden" name="amount" value="${totalPrice}">
+      <input type="hidden" name="courseInfoString" value=${JSON.stringify(courseInfo)}>
+      ${getCookie().token ? '<button type="submit" class="btn btn-primary">馬上下訂</button>' : '<em>登入，即可下訂</em>'}
+    </form>
+  `
+}
+
+function clearCart () {
+  cart.splice(0, cart.length)
+  updateCartLocalStorage()
+}
+
+// handle remove course from cart
+async function cartPageHandler (event) {
+  const target = event.target
+  const clickRemoveFromCart = target.matches('.remove-from-cart')
+  if (clickRemoveFromCart) {
+    const courseId = target.dataset.courseId
+    cart.splice(cart.indexOf(courseId), 1)
+    updateCartLocalStorage()
+
+    // refetch and reload
+    await fetchCartCoursesInfo()
+  }
 }
