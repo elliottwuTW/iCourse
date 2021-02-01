@@ -187,9 +187,9 @@ exports.createGroupCourse = asyncUtil(async (req, res, next) => {
 
 // get current user's following groups ids
 async function getUserFollowGroupIds (req) {
-  const followGroupsResult = await fetchData(req, {
+  const userInfoResult = await fetchData(req, {
     method: 'get',
-    path: `/users/${req.user.id}/follows`
+    path: `/users/${req.user.id}/public`
   })
-  return followGroupsResult.data.groups.map(group => group.id)
+  return userInfoResult.data.followGroups.map(group => group.id)
 }

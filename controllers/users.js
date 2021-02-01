@@ -7,14 +7,14 @@ const fetchData = require('../utils/fetchData')
 exports.profilePage = asyncUtil(async (req, res, next) => {
   let user
   // following groups
-  const followResult = await fetchData(req, {
+  const userInfoResult = await fetchData(req, {
     method: 'get',
-    path: `/users/${req.params.id}/follows`
+    path: `/users/${req.params.id}/public`
   })
   // user info
   const isSelf = String(req.user.id) === String(req.params.id)
   if (!isSelf) {
-    user = { name: followResult.data.user }
+    user = { name: userInfoResult.data.name }
   } else {
     const userResult = await fetchData(req, {
       method: 'get',
@@ -26,7 +26,8 @@ exports.profilePage = asyncUtil(async (req, res, next) => {
   return res.render('profile', {
     user,
     isSelf,
-    follow: followResult.data
+    follow: userInfoResult.data.followGroups,
+    enrollment: userInfoResult.data.ownCourses
   })
 })
 
