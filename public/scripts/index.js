@@ -434,12 +434,8 @@ async function renderCartPage (courses) {
         <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" required>
       </div>
       <div class="form-group">
-        <label for="phone">Phone</label>
-        <input type="text" class="form-control" id="phone" placeholder="Enter phone" name="phone" required>
-      </div>
-      <div class="form-group">
-        <label for="address">Address</label>
-        <input type="text" class="form-control" id="address" placeholder="Enter address" name="address" required>
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" placeholder="Enter email" name="email" required>
       </div>
       <input type="hidden" name="amount" value="${totalPrice}">
       <input type="hidden" name="courseInfoString" value=${JSON.stringify(courseInfo)}>

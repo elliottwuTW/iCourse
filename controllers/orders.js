@@ -49,7 +49,7 @@ exports.getPaymentPage = asyncUtil(async (req, res, next) => {
 
   // get trade parameters information
   const order = orderResult.data
-  const tradeInfo = getTradeInfo(order.amount, `iCourse order from ${order.name}`, order.User.email)
+  const tradeInfo = getTradeInfo(order.amount, `iCourse order from ${order.name}`, order.email)
 
   // update sn of order to keep tracked after spgateway callback
   await fetchData(req, {
