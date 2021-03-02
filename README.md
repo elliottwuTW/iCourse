@@ -17,6 +17,7 @@ Users/Publishers can
 - reset password when forgot it
 - add courses into the shopping cart
 - pay online and enroll in multiple courses
+  (use credit card number 4000-2211-1111-1111 for testing)
 - receive email after a payment is finished
 
 Publishers can
