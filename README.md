@@ -38,11 +38,11 @@ Users can
 ### Mock Account
 #### Publisher
 - email: steve@example.com
-- password: 12345678
+- password: 123456
 
 #### User
 - email: john@example.com
-- password: 12345678
+- password: 123456
 
 ### Website Info
 
